@@ -30,33 +30,7 @@ export class BlockEngine<
     private blockIndex = 0;
     private running = false;
 
-    //the build method is there to use with block factories
-    static async build(functions: Record<string, BlockFn | BlockFnFactory>) {
-        for (const [key, fn] of Object.entries(functions)) {
-            if (typeof fn === "object") {
-                if (!fn.factory) {
-                    throw new Error(
-                        "Recieved an object that is not a valid factory"
-                    );
-                }
-
-                const blockFn = (functions[key] = await fn.factory());
-
-                if (typeof blockFn !== "function") {
-                    throw new Error("Factory did not return a function");
-                }
-
-                functions[key] = blockFn;
-            }
-        }
-
-        return new BlockEngine(
-            functions as Record<keyof typeof functions, BlockFn>
-        );
-    }
-
     constructor(blockFunctions: T) {
-        super();
         this.blockFunctions = blockFunctions;
     }
 
@@ -178,7 +152,7 @@ export class BlockEngine<
         }
     }
 
-    public async executeBlock(block: BlockType<keyof T>) {
+    private async executeBlock(block: BlockType<keyof T>) {
         for (const service of this.services) {
             if (typeof service.onBeforeBlock === "function") {
                 service.onBeforeBlock({

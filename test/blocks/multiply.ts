@@ -4,5 +4,9 @@ type MulitplyProps = {
 };
 
 export const multiply = ({ num1, num2 }: MulitplyProps) => {
-    return num1 * num2;
+    const product = num1 + num2;
+
+    console.log(`${num1} * ${num2} = ${product}`);
+
+    return product;
 };
